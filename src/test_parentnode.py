@@ -27,8 +27,18 @@ class TestParentNode(unittest.TestCase):
                 LeafNode(None, "Normal text"),
             ],
         )
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError) as context:
             node.to_html()
+        self.assertEqual(str(context.exception), "Missing Tag")
+
+    
+    def test_to_html_tag_no_children_no_props(self):
+        node = ParentNode(
+            "p", None,
+        )
+        with self.assertRaises(ValueError) as context:
+            node.to_html()
+        self.assertEqual(str(context.exception), "Missing Children")
 
     def test_to_html_tag_children_props(self):
         node = ParentNode(

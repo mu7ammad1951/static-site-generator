@@ -34,6 +34,11 @@ class TestHTMLNode(unittest.TestCase):
 
         self.assertEqual(node.props_to_html(), expected_result)
 
+    def test_repr_2(self):
+        node = HTMLNode("a", "www.google.com", [], {
+        })
+        self.assertEqual(f"Tag: a \n Value: www.google.com \n Children: {[]} \n Props: {{}}", str(node))
+
     def test_to_html_raises(self):
         node = HTMLNode()
         with self.assertRaises(NotImplementedError):
