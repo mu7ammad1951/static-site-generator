@@ -2,7 +2,7 @@ import unittest
 from inline_text_functions import *
 from textnode import TextNode, TextType
 
-class TestUtils(unittest.TestCase):
+class TestInlineTextFunctions(unittest.TestCase):
     def test_split_nodes_delimiter_code(self):
         node = TextNode("This is text with a `code block` word", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
