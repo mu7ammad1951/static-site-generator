@@ -249,3 +249,37 @@ this is paragraph text
             "<div><blockquote>This is a blockquote block</blockquote><p>this is paragraph text</p></div>",
         )
 
+
+    def test_extract_title(self):
+        md = """
+# Tolkien Fan Club
+
+**I like Tolkien**. Read my [first post here](/majesty) (sorry the link doesn't work yet)
+"""
+        expected_title = "Tolkien Fan Club"
+        actual_title = extract_title(md)
+        self.assertEqual(expected_title, actual_title)
+
+
+    def test_extract_title_different_levels(self):
+        md = """
+# Tolkien Fan Club
+
+**I like Tolkien**. Read my [first post here](/majesty) (sorry the link doesn't work yet)
+
+## Reasons I like Tolkien
+"""
+        expected_title = "Tolkien Fan Club"
+        actual_title = extract_title(md)
+        self.assertEqual(expected_title, actual_title)
+
+
+    def test_extract_title_no_heading(self):
+        md = """
+**I like Tolkien**. Read my [first post here](/majesty) (sorry the link doesn't work yet)
+
+## Reasons I like Tolkien
+"""
+        with self.assertRaises(ValueError) as context:
+            extract_title(md)
+        self.assertEqual(str(context.exception), "Missing Heading 1")

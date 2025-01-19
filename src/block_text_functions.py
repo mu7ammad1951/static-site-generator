@@ -1,6 +1,9 @@
 import re
 from parentnode import ParentNode
 from inline_text_functions import *
+import os
+import shutil
+from pathlib import Path
 
 def markdown_to_blocks(text):
     return list(filter(lambda x: x!="", map(lambda x: x.strip(), text.split("\n\n"))))
@@ -166,3 +169,71 @@ def ordered_to_html(block):
         line_text = line[2:].strip()
         list_items.append(ParentNode("li", text_to_children(line_text)))
     return ParentNode("ol", list_items)
+
+def extract_title(markdown):
+    headings = []
+    for line in markdown.split("\n"):
+        if line.startswith("#"):
+            headings.append(line)
+    title = None
+    for heading in headings:
+        level, text = heading.strip().split(maxsplit=1)
+        if len(level.strip()) != 1:
+            continue
+        else:
+            title = text
+            break
+    if title is None:
+        raise ValueError("Missing Heading 1")
+    return title
+
+def copy_static(source_path, destination_path):
+    if os.path.exists(destination_path):
+        shutil.rmtree(destination_path)
+    os.mkdir(destination_path)    
+    dir_contents = os.listdir(source_path)
+    for file in dir_contents:
+        file_path = os.path.join(source_path, file)
+        if os.path.isfile(file_path):
+            shutil.copy(file_path, destination_path)
+        else:
+            copy_static(file_path, os.path.join(destination_path, file))
+
+
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+
+    with open(from_path) as f:
+        markdown = f.read()
+        f.close()
+
+    with open(template_path) as f:
+        template = f.read()
+        f.close()
+
+    html_string = markdown_to_html_node(markdown).to_html()
+    title = extract_title(markdown)
+
+    template = template.replace(r"{{ Title }}", title)
+    template = template.replace(r"{{ Content }}", html_string)
+
+    if not os.path.exists(dest_path):
+        os.makedirs(dest_path)
+    with open(os.path.join(dest_path, "index.html"), "w") as f:
+        f.write(template)
+        f.close()
+
+def generate_page_recursive(dir_path_content, template_path, dest_dir_path):
+    dir_contents = os.listdir(dir_path_content)
+
+    for file in dir_contents:
+        file_path = Path(os.path.join(dir_path_content, file))
+        if os.path.isfile(file_path):
+            if file_path.suffix == ".md":
+                generate_page(file_path, template_path, dest_dir_path)
+
+        else:
+            generate_page_recursive(file_path, template_path, os.path.join(dest_dir_path, file))
+
+    
