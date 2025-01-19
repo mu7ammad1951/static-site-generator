@@ -8,5 +8,5 @@ To adjust the styling, edit the 'index.css' file located in the 'static' directo
 
 To use this generator, place your own markdown files in the content directory. You can structure the content directory as you like. Ensure your markdown files are appropriately formmatted with an empty line separating each block. Analyze the existing markdown files in the 'content' directory to understand the proper formatting.
 
-To run the files on Linux, you can use the pre-written script main.sh
-`./main.sh` will run and also start an http server on port 8888
+To run the files on Linux, you can use the pre-written script main.sh using the command
+`./main.sh`, which will run the generator and also start an http server on port 8888 to view the generated webpage.
